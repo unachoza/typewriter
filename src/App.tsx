@@ -1,24 +1,39 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { useState, useEffect } from "react";
+import { useFetchData } from "./hooks/useFetchData";
+import Typewriter from './components/Typewriter';
+import { FLAG_URL } from "./constants/constants";
 
-function App() {
+const App = () => {
+  const { data, error, isLoading } = useFetchData(FLAG_URL);
+  const [letters, setLetters] = useState<string[]>([]);
+
+  useEffect(() => {
+    if(data && !isLoading) {
+      performTypewriter(data);
+    }
+  }, [data]);
+
+  const performTypewriter = (string:string, index:number = -1) => {
+    // starting index at -1 for initial delay only for the first letter
+    if (index === -1) {
+      setTimeout(() => performTypewriter(string, index + 1), 500);
+    } else if (index < string.length) {
+      setLetters((prevLetters) => [...prevLetters, string[index]]);
+      setTimeout(() => performTypewriter(string, index + 1), 500);
+    }
+  };
+
+  if (isLoading) {
+    return <h1>Loading...</h1>;
+  }
+
+  if (error) {
+    return <h1>Error: {error}</h1>;
+  }
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+       <Typewriter letters={letters} />
     </div>
   );
 }
