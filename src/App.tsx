@@ -13,13 +13,17 @@ const App = () => {
     }
   }, [data]);
 
+  let typewriterTimeoutId:any;
+
   const performTypewriter = (string:string, index:number = -1) => {
     // starting index at -1 for initial delay only for the first letter
     if (index === -1) {
-      setTimeout(() => performTypewriter(string, index + 1), 500);
+      typewriterTimeoutId = setTimeout(() => performTypewriter(string, index + 1), 500);
     } else if (index < string.length) {
       setLetters((prevLetters) => [...prevLetters, string[index]]);
-      setTimeout(() => performTypewriter(string, index + 1), 500);
+      typewriterTimeoutId = setTimeout(() => performTypewriter(string, index + 1), 500);
+    } else if(index >= string.length){
+      clearTimeout(typewriterTimeoutId);
     }
   };
 
